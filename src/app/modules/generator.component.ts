@@ -192,7 +192,7 @@ export class GeneratorComponent implements OnInit {
     };
   }
 
-  limit: number = 10;
+  limit: number = 5;
   index: number = 0;
   dataSource;
 
