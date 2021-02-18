@@ -176,6 +176,8 @@ export class GeneratorComponent implements OnInit {
       /* Add place to order (#) */
       this.refExcelData.map(x => x.unshift("#"));
       this.excelTransformNum.unshift("order");
+      console.log(this.sheetCellRange);
+      console.log(this.sheetMaxRow);
       /* merge into JSON */
       this.excelDataEncodeToJson = this.refExcelData.slice(0).map(item =>
         item.reduce((obj, val, i) => {
@@ -189,6 +191,7 @@ export class GeneratorComponent implements OnInit {
         }
       );
       this.filterData();
+      this.validateData();
     };
   }
 
@@ -210,5 +213,24 @@ export class GeneratorComponent implements OnInit {
         index <= (this.index + 1) * this.limit - 1
       );
     });
+  }
+
+  isNumber(stringInput: String): boolean {
+    let result: number;
+    try {
+      result = +stringInput;
+    } catch (e) {
+      console.log("Error!" + result);
+      return false;
+    }
+    return true;
+  }
+
+  validateData() {
+    for (let row = 1; row <= this.sheetMaxRow; row++) {
+      if (this.isNumber(this.excelDataEncodeToJson[row][0]) == false) {
+        console.log("Error!");
+      }
+    }
   }
 }
