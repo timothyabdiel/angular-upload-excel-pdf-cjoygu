@@ -1,0 +1,108 @@
+<div class="main">
+  <form class="main-form" [formGroup]="firstFormGroup">
+    <mat-radio-group class="gen-change-type">
+      <div class="gen-change-type__main">
+        <div class="gen-change-type__excel">
+          <mat-radio-button
+            #tMatRadioExcel
+            value="2"
+            (click)="onClickRadioExcel()"
+            checked
+            >Excel</mat-radio-button
+          >
+          <label (click)="tMatRadioExcel.checked = true">
+            <i class="temp-upload-icon" for="excel-upload">click to upload</i>
+            <input
+              type="file"
+              id="excel-upload"
+              accept=".xlsx"
+              multiple="false"
+              (change)="inputExcelOnClick($event)"
+            />
+          </label>
+        </div>
+      </div>
+      <div class="gen-excel-tab" *ngIf="!isEmptyDrop && isExcelDrop">
+        <div class="excel-tab-prev"></div>
+        <mat-form-field floatLabel="never" appearance="none">
+          <mat-select
+            [(value)]="selectDefault"
+            class="garage-select-color"
+            #tSelectTabHeight
+            (click)="consoleHeight(tSelectTabHeight)"
+            placeholder="Select an Tab"
+            disableOptionCentering
+            disableRipple
+          >
+            <div [ngClass]="{'outer-tofix-perfect-scrollbar': isMaxSelect }">
+              <mat-option
+                *ngFor="let name of sheetNameForTab; let i = index"
+                [value]="name"
+                (click)="loadSheetOnTabClick(i)"
+              >
+                {{name}}
+              </mat-option>
+            </div>
+          </mat-select>
+        </mat-form-field>
+        <p class="excel-tab-page">{{currentPage + 1}} / {{ totalPage }}</p>
+        <div class="excel-tab-next"></div>
+      </div>
+    </mat-radio-group>
+    <div class="gen-drop">
+      <div
+        class="dropzone"
+        *ngIf="isEmptyDrop"
+        appDragDrop
+        (filesChangeEmiter)="dropExcelOnChance($event)"
+        (filesInvalidEmiter)="dropExcelBlock($event)"
+        [allowed_extensions]="['xlsx','xls',  'xlsm','xltx','xltm','xlsb','xlam']"
+      >
+        <div class="text-wrapper">
+          <div class="centered">DRAG & DROP</div>
+          <div class="centered-sub">Excel format is suggested.</div>
+        </div>
+      </div>
+      <div class="display-sheet-js" [hidden]="!(!isEmptyDrop && isExcelDrop)">
+        <div class="example-container">
+          <table mat-table [dataSource]="dataSource" style="margin-left:-70px">
+            <tr
+              mat-header-row
+              *matHeaderRowDef="excelTransformNum; sticky: true"
+            ></tr>
+            <tr mat-row *matRowDef="let row ; columns: excelTransformNum;"></tr>
+            <ng-container matColumnDef="order" sticky>
+              <th mat-header-cell *matHeaderCellDef style="visibility: hidden">
+                {{sheetMaxRow}}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let element; let idx = index"
+                style="visibility: hidden"
+              >
+                #
+              </td>
+            </ng-container>
+            <ng-container
+              *ngFor="let disCol of excelTransformNum | slice:1 ;let colIndex = index ;"
+              matColumnDef="{{disCol}}"
+            >
+              <th mat-header-cell *matHeaderCellDef>{{disCol}}</th>
+              <td mat-cell *matCellDef="let element">{{ element[disCol]}}</td>
+            </ng-container>
+          </table>
+
+          <mat-paginator
+            [pageSizeOptions]="[5, 10, 20]"
+            [pageSize]="limit"
+            [length]="excelDataEncodeToJson.length"
+            (page)="changePage($event)"
+            showFirstLastButtons
+            style="display: relative; left: 50%"
+          >
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
